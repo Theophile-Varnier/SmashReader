@@ -32,6 +32,7 @@ MainWindow::~MainWindow()
 {
     delete myPlayer;
     delete ui;
+    delete rubberBand;
 }
 
 void MainWindow::on_pushButton_clicked()
