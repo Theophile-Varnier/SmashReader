@@ -7,10 +7,17 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <shared_ptr.hpp>
+
+#include "smashvideo.h"
+
 using namespace cv;
+
 class Player : public QThread
 {    Q_OBJECT
+
  private:
+
     bool stop;
     QMutex mutex;
     QWaitCondition condition;
@@ -19,12 +26,13 @@ class Player : public QThread
     VideoCapture *capture;
     Mat RGBframe;
     QImage img;
+     boost::shared_ptr<SmashVideo> _video;
+
  signals:
  //Signal to output frame to be displayed
       void processedImage(const QImage &image);
  protected:
      void run();
-     void msleep(int ms);
  public:
     //Constructor
     Player(QObject *parent = 0);
@@ -44,5 +52,6 @@ class Player : public QThread
     double getFrameRate();
     double getCurrentFrame();
     double getNumberOfFrames();
+     boost::shared_ptr<SmashVideo> video() const;
 };
 #endif // VIDEOPLAYER_H

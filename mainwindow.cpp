@@ -7,8 +7,10 @@ MainWindow::MainWindow(QWidget *parent) :
     rubberBand(NULL)
 {
     myPlayer = new Player();
+    progressBar = new QProgressBar();
     QObject::connect(myPlayer, SIGNAL(processedImage(QImage)),
-                              this, SLOT(updatePlayerUI(QImage)));
+                     this, SLOT(updatePlayerUI(QImage)));
+    QObject::connect(myPlayer->video().get(), SIGNAL(loadedFrame(long)), this, SLOT(update_progress_bar(long)));
     ui->setupUi(this);
     QObject::connect(ui->label, SIGNAL(Mouse_Press(QMouseEvent*)), this, SLOT(startDrawRubberBand(QMouseEvent*)));
     QObject::connect(ui->label, SIGNAL(Mouse_Move(QMouseEvent*)), this, SLOT(drawRubberBand(QMouseEvent*)));
@@ -22,7 +24,7 @@ void MainWindow::updatePlayerUI(QImage img)
     {
         ui->label->setAlignment(Qt::AlignCenter);
         ui->label->setPixmap(QPixmap::fromImage(img).scaled(ui->label->size(),
-                                           Qt::KeepAspectRatio, Qt::FastTransformation));
+                                                            Qt::KeepAspectRatio, Qt::FastTransformation));
         ui->horizontalSlider->setValue(myPlayer->getCurrentFrame());
         ui->label_2->setText( getFormattedTime( (int)myPlayer->getCurrentFrame()/(int)myPlayer->getFrameRate()) );
     }
@@ -33,16 +35,22 @@ MainWindow::~MainWindow()
     delete myPlayer;
     delete ui;
     delete rubberBand;
+    delete progressBar;
 }
 
 void MainWindow::on_pushButton_clicked()
 {
+    progressBar->setMinimum(0);
+    progressBar->setMaximum(100);
+    progressBar->setValue(0);
+    progressBar->setTextVisible(true);
     QString filename = QFileDialog::getOpenFileName(this,
-                                          tr("Open Video"), ".",
-                                          tr("Video Files (*.avi *.mpg *.mp4)"));
+                                                    tr("Open Video"), ".",
+                                                    tr("Video Files (*.avi *.mpg *.mp4)"));
     QFileInfo name = filename;
 
     if (!filename.isEmpty()){
+        progressBar->show();
         if (!myPlayer->loadVideo(filename.toStdString().data()))
         {
             QMessageBox msgBox;
@@ -56,6 +64,7 @@ void MainWindow::on_pushButton_clicked()
             ui->horizontalSlider->setMaximum(myPlayer->getNumberOfFrames());
             ui->label_3->setText( getFormattedTime( (int)myPlayer->getNumberOfFrames()/(int)myPlayer->getFrameRate()) );
         }
+        progressBar->hide();
     }
 }
 void MainWindow::on_pushButton_2_clicked()
@@ -110,6 +119,12 @@ void MainWindow::on_horizontalSlider_sliderPressed()
 void MainWindow::on_horizontalSlider_sliderReleased()
 {
     myPlayer->Play();
+}
+
+void MainWindow::update_progress_bar(long value)
+{
+    int newValue = (100*value)/myPlayer->video()->getTotalFrameNumber();
+    progressBar->setValue(newValue);
 }
 
 void MainWindow::on_horizontalSlider_sliderMoved(int position)

@@ -1,9 +1,11 @@
 #include "player.h"
+#include <make_shared.hpp>
 
 Player::Player(QObject *parent)
  : QThread(parent)
 {
     stop = true;
+    _video = boost::make_shared<SmashVideo>();
 }
 
 bool Player::loadVideo(std::string filename) {
@@ -13,6 +15,7 @@ bool Player::loadVideo(std::string filename) {
     if (capture->isOpened())
     {
         frameRate = (int) capture->get(CV_CAP_PROP_FPS);
+        _video->load(capture);
         return true;
     }
     else
@@ -31,7 +34,6 @@ void Player::Play()
 
 void Player::run()
 {
-    int delay = (1000/frameRate);
     while(!stop){
         if (!capture->read(frame))
         {
@@ -48,7 +50,6 @@ void Player::run()
                                  frame.cols,frame.rows,QImage::Format_Indexed8);
         }
         emit processedImage(img);
-        this->msleep(delay);
     }
 }
 
@@ -66,10 +67,7 @@ void Player::Stop()
 {
     stop = true;
 }
-void Player::msleep(int ms){
-    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-    nanosleep(&ts, NULL);
-}
+
 bool Player::isStopped() const{
     return this->stop;
 }
@@ -82,6 +80,11 @@ double Player::getCurrentFrame(){
 double Player::getNumberOfFrames(){
 
     return capture->get(CV_CAP_PROP_FRAME_COUNT);
+}
+
+boost::shared_ptr<SmashVideo> Player::video() const
+{
+    return _video;
 }
 
 double Player::getFrameRate(){
