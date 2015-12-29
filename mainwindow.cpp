@@ -7,7 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
     rubberBand(NULL)
 {
     myPlayer = new Player();
-    progressBar = new QProgressBar();
+    progressBar = new QProgressDialog(tr("Chargement de la vidéo..."), tr("Annuler"), 0, 100, this);
+    progressBar->setWindowModality(Qt::WindowModal);
+    progressBar->setCancelButton(0);
     QObject::connect(myPlayer, SIGNAL(processedImage(QImage)),
                      this, SLOT(updatePlayerUI(QImage)));
     QObject::connect(myPlayer->video().get(), SIGNAL(loadedFrame(long)), this, SLOT(update_progress_bar(long)));
@@ -26,7 +28,7 @@ void MainWindow::updatePlayerUI(QImage img)
         ui->label->setPixmap(QPixmap::fromImage(img).scaled(ui->label->size(),
                                                             Qt::KeepAspectRatio, Qt::FastTransformation));
         ui->horizontalSlider->setValue(myPlayer->getCurrentFrame());
-        ui->label_2->setText( getFormattedTime( (int)myPlayer->getCurrentFrame()/(int)myPlayer->getFrameRate()) );
+        ui->label_2->setText( getFormattedTime( (int)myPlayer->getCurrentFrame()/(int)myPlayer->getFrameRate()));
     }
 }
 
@@ -40,10 +42,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    progressBar->setMinimum(0);
-    progressBar->setMaximum(100);
-    progressBar->setValue(0);
-    progressBar->setTextVisible(true);
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Open Video"), ".",
                                                     tr("Video Files (*.avi *.mpg *.mp4)"));

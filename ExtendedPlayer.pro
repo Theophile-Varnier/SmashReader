@@ -12,15 +12,13 @@ SOURCES += main.cpp\
     player.cpp \
     cqlabel.cpp \
     smashvideo.cpp \
-    smat.cpp \
-    progresswidget.cpp
+    smat.cpp
 
 HEADERS  += mainwindow.h \
     player.h \
     cqlabel.h \
     smashvideo.h \
-    smat.h \
-    progresswidget.h
+    smat.h
 FORMS    += mainwindow.ui
 
 # Opencv Library

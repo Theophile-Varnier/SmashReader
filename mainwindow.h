@@ -3,7 +3,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QProgressBar>
+#include <QProgressDialog>
 #include <player.h>
 #include <QTime>
 #include <QRubberBand>
@@ -33,16 +33,15 @@ private slots:
 
     void on_horizontalSlider_sliderReleased();
 
-    void update_progress_bar(long value);
-
     void on_horizontalSlider_sliderMoved(int position);
     void drawRubberBand(QMouseEvent *event);
     void startDrawRubberBand(QMouseEvent *event);
+    void update_progress_bar(long value);
 
 private:
     Ui::MainWindow *ui;
     Player* myPlayer;
-    QProgressBar *progressBar;
+    QProgressDialog *progressBar;
     QRubberBand *rubberBand;
     QPoint origin;
 };
