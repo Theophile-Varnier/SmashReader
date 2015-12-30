@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     progressBar = new QProgressDialog(tr("Chargement de la vidéo..."), tr("Annuler"), 0, 100, this);
     progressBar->setWindowModality(Qt::WindowModal);
     progressBar->setCancelButton(0);
+    progressBar->setWindowTitle(tr("Chargement..."));
     QObject::connect(myPlayer, SIGNAL(processedImage(QImage)),
                      this, SLOT(updatePlayerUI(QImage)));
     QObject::connect(myPlayer->video().get(), SIGNAL(loadedFrame(long)), this, SLOT(update_progress_bar(long)));

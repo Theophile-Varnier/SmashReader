@@ -50,8 +50,8 @@ class Player : public QThread
     void setCurrentFrame( int frameNumber);
     //Get video properties
     double getFrameRate();
-    double getCurrentFrame();
-    double getNumberOfFrames();
+    long getCurrentFrame();
+    long getNumberOfFrames();
      boost::shared_ptr<SmashVideo> video() const;
 };
 #endif // VIDEOPLAYER_H

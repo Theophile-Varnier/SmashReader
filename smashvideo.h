@@ -16,9 +16,11 @@ signals:
 public:
     SmashVideo();
     void load(cv::VideoCapture *videoCapture);
-    boost::shared_ptr<SMat> getCurrentFrame() const;
+    boost::shared_ptr<SMat> getCurrentFrame();
     long getCurrentFrameNumber() const;
     long getTotalFrameNumber() const;
+    bool finished() const;
+    void setCurrentFrameNumber(long newNumber);
 
 private:
     std::vector<boost::shared_ptr<SMat> > _frames;

@@ -10,6 +10,7 @@ public:
     SMat(const cv::Mat& source);
     const QRect& getBlobZone() const;
     void setBlobZone(const QRect& rect);
+    const cv::Mat& source() const;
 
 private:
     cv::Mat _source;

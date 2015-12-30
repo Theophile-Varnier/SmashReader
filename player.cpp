@@ -35,21 +35,36 @@ void Player::Play()
 void Player::run()
 {
     while(!stop){
-        if (!capture->read(frame))
-        {
+        if(_video->finished()){
             stop = true;
+        } else{
+            frame = _video->getCurrentFrame()->source();
+            if (frame.channels()== 3){
+                cv::cvtColor(frame, RGBframe, CV_BGR2RGB);
+                img = QImage((const unsigned char*)(RGBframe.data),
+                                  RGBframe.cols,RGBframe.rows,QImage::Format_RGB888);
+            }
+            else
+            {
+                img = QImage((const unsigned char*)(frame.data),
+                                     frame.cols,frame.rows,QImage::Format_Indexed8);
+            }
+            emit processedImage(img);
         }
-        if (frame.channels()== 3){
-            cv::cvtColor(frame, RGBframe, CV_BGR2RGB);
-            img = QImage((const unsigned char*)(RGBframe.data),
-                              RGBframe.cols,RGBframe.rows,QImage::Format_RGB888);
-        }
-        else
-        {
-            img = QImage((const unsigned char*)(frame.data),
-                                 frame.cols,frame.rows,QImage::Format_Indexed8);
-        }
-        emit processedImage(img);
+//        if (!capture->read(frame))
+//        {
+//            stop = true;
+//        }
+//        if (frame.channels()== 3){
+//            cv::cvtColor(frame, RGBframe, CV_BGR2RGB);
+//            img = QImage((const unsigned char*)(RGBframe.data),
+//                              RGBframe.cols,RGBframe.rows,QImage::Format_RGB888);
+//        }
+//        else
+//        {
+//            img = QImage((const unsigned char*)(frame.data),
+//                                 frame.cols,frame.rows,QImage::Format_Indexed8);
+//        }
     }
 }
 
@@ -72,14 +87,14 @@ bool Player::isStopped() const{
     return this->stop;
 }
 
-double Player::getCurrentFrame(){
+long Player::getCurrentFrame(){
 
-    return capture->get(CV_CAP_PROP_POS_FRAMES);
+    return _video->getCurrentFrameNumber();
 }
 
-double Player::getNumberOfFrames(){
+long Player::getNumberOfFrames(){
 
-    return capture->get(CV_CAP_PROP_FRAME_COUNT);
+    return _video->getTotalFrameNumber();
 }
 
 boost::shared_ptr<SmashVideo> Player::video() const
@@ -93,5 +108,5 @@ double Player::getFrameRate(){
 
 void Player::setCurrentFrame( int frameNumber )
 {
-    capture->set(CV_CAP_PROP_POS_FRAMES, frameNumber);
+    _video->setCurrentFrameNumber(frameNumber);
 }

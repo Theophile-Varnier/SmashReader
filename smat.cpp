@@ -15,3 +15,8 @@ void SMat::setBlobZone(const QRect &rect)
 {
     _blobZone = rect;
 }
+
+const cv::Mat &SMat::source() const
+{
+    return _source;
+}
